@@ -1,6 +1,5 @@
 #include "pipex.h"
 
-
 void	ft_error(char *error_msg)
 {
 	perror(error_msg);
@@ -16,7 +15,8 @@ char	*ft_getenv(char *name)
 	env = environ;
 	while (*env)
 	{
-		if (ft_strncmp(*env, name, ft_strlen(name)) == 0 && (*env)[ft_strlen(name)] == '=')
+		if (ft_strncmp(*env, name, ft_strlen(name)) == 0
+			&& (*env)[ft_strlen(name)] == '=')
 		{
 			value = *env + ft_strlen(name) + 1; // Skip the '='
 			return (value);
@@ -60,7 +60,7 @@ char	*get_cmd_path(char *cmd, char **envp)
 
 void	process1(int fd1, int fd2, char *cmd1, char **envp, char **argv)
 {
-	int		pid;
+	int	pid;
 
 	pid = fork();
 	if (pid < 0)
@@ -82,7 +82,7 @@ void	process1(int fd1, int fd2, char *cmd1, char **envp, char **argv)
 
 void	process2(int fd1, int fd2, char *cmd2, char **envp, char **argv)
 {
-	int		pid;
+	int	pid;
 
 	pid = fork();
 	if (pid < 0)
@@ -93,7 +93,7 @@ void	process2(int fd1, int fd2, char *cmd2, char **envp, char **argv)
 		dup2(fd2, STDOUT_FILENO);
 		close(fd1);
 		close(fd2);
-		execve(cmd2, argv, envp);	
+		execve(cmd2, argv, envp);
 		ft_error("Execve failed for cmd2");
 	}
 	else // Parent process
@@ -108,7 +108,8 @@ int	main(int argc, char **argv, char **envp)
 	int		fd2;
 	int		pid1;
 	int		pid2;
-
+	char	*cmd1;
+	char	*cmd2;
 
 	if (argc < 5)
 		ft_error("Usage: ./pipex file1 cmd1 cmd2 file2");
@@ -121,8 +122,8 @@ int	main(int argc, char **argv, char **envp)
 		close(fd1);
 		ft_error("Error opening file2");
 	}
-	char *cmd1 = get_cmd_path(argv[2], envp);
-	char *cmd2 = get_cmd_path(argv[3], envp);
+	cmd1 = get_cmd_path(argv[2], envp);
+	cmd2 = get_cmd_path(argv[3], envp);
 	if (!cmd1 || !cmd2)
 	{
 		close(fd1);
@@ -136,5 +137,4 @@ int	main(int argc, char **argv, char **envp)
 	close(fd1);
 	close(fd2);
 	return (0);
-
 }
