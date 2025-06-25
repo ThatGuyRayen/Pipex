@@ -1,63 +1,29 @@
 #include "pipex.h"
 
+
 void	ft_error(char *error_msg)
 {
 	perror(error_msg);
 	exit(EXIT_FAILURE);
 }
 
-void	process1(int fd1, int fd2, char *cmd1, char **envp)
+char	*ft_getenv(char *name)
 {
-	int		fd[2];
-	pid_t	pid1;
+	extern char	**environ;
+	char		**env;
+	char		*value;
 
-	if (pipe(fd) < 0)
-		ft_error("Pipe error");
-	pid1 = fork();
-	if (pid1 < 0)
-		ft_error("Fork error");
-	if (pid1 == 0)
+	env = environ;
+	while (*env)
 	{
-		close(fd[0]);
-		dup2(fd1, STDIN_FILENO);
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd1);
-		close(fd[1]);
-		execve(cmd1, NULL, envp);
-		ft_error("Execve error in process1");
+		if (ft_strncmp(*env, name, ft_strlen(name)) == 0 && (*env)[ft_strlen(name)] == '=')
+		{
+			value = *env + ft_strlen(name) + 1; // Skip the '='
+			return (value);
+		}
+		env++;
 	}
-	else
-	{
-		close(fd[1]);
-		waitpid(pid1, NULL, 0);
-	}
-}
-
-void	process2(int fd1, int fd2, char *cmd2, char **envp)
-{
-	int		fd[2];
-	pid_t	pid2;
-
-	if (pipe(fd) < 0)
-		ft_error("Pipe error");
-	pid2 = fork();
-	if (pid2 < 0)
-		ft_error("Fork error");
-	if (pid2 == 0)	
-	{
-		close(fd[0]);
-		dup2(fd[1], STDOUT_FILENO);
-		dup2(fd2, STDIN_FILENO);
-		close(fd2);
-		close(fd[1]);
-		execve(cmd2, NULL, envp);
-		ft_error("Execve error in process2");
-	}
-	else
-	{
-		close(fd[1]);
-		waitpid(pid2, NULL, 0);
-	}
+	return (NULL);
 }
 
 char	*get_cmd_path(char *cmd, char **envp)
@@ -67,7 +33,7 @@ char	*get_cmd_path(char *cmd, char **envp)
 	char	**paths;
 	int		i;
 
-	paths = ft_split(getenv("PATH"), ':');
+	paths = ft_split(ft_getenv("PATH"), ':');
 	if (!paths)
 		ft_error("Error splitting PATH");
 	while (*paths)
@@ -92,6 +58,49 @@ char	*get_cmd_path(char *cmd, char **envp)
 	return (NULL); // This line will never be reached
 }
 
+void	process1(int fd1, int fd2, char *cmd1, char **envp, char **argv)
+{
+	int		pid;
+
+	pid = fork();
+	if (pid < 0)
+		ft_error("Fork failed");
+	if (pid == 0) // Child process
+	{
+		dup2(fd1, STDIN_FILENO);
+		dup2(fd2, STDOUT_FILENO);
+		close(fd1);
+		close(fd2);
+		execve(cmd1, argv, envp);
+		ft_error("Execve failed for cmd1");
+	}
+	else // Parent process
+	{
+		waitpid(pid, NULL, 0);
+	}
+}
+
+void	process2(int fd1, int fd2, char *cmd2, char **envp, char **argv)
+{
+	int		pid;
+
+	pid = fork();
+	if (pid < 0)
+		ft_error("Fork failed");
+	if (pid == 0) // Child process
+	{
+		dup2(fd1, STDIN_FILENO);
+		dup2(fd2, STDOUT_FILENO);
+		close(fd1);
+		close(fd2);
+		execve(cmd2, argv, envp);	
+		ft_error("Execve failed for cmd2");
+	}
+	else // Parent process
+	{
+		waitpid(pid, NULL, 0);
+	}
+}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -112,5 +121,20 @@ int	main(int argc, char **argv, char **envp)
 		close(fd1);
 		ft_error("Error opening file2");
 	}
+	char *cmd1 = get_cmd_path(argv[2], envp);
+	char *cmd2 = get_cmd_path(argv[3], envp);
+	if (!cmd1 || !cmd2)
+	{
+		close(fd1);
+		close(fd2);
+		ft_error("Command not found");
+	}
+	process1(fd1, fd2, cmd1, envp, argv + 2);
+	process2(fd1, fd2, cmd2, envp, argv + 3);
+	free(cmd1);
+	free(cmd2);
+	close(fd1);
+	close(fd2);
+	return (0);
 
 }
