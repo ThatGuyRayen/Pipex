@@ -1,4 +1,4 @@
-NAME = PIPEX
+NAME = pipex
 CC = cc
 SRCS = pipex.c
 OBJS = $(SRCS:.c=.o)
