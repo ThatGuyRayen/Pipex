@@ -11,8 +11,8 @@
 
 void	ft_error(char *error_msg);
 char	*ft_getenv(char *name);
-void	process1(int fd1, int fd2, char *cmd1, char **envp, char **argv);
-void	process2(int fd1, int fd2, char *cmd2, char **envp, char **argv);
+void	process1(int infile, int pipe_write, char *cmd_str, char **envp);
+void	process(int pipe_read, int outfile, char *cmd_str, char **envp);
 char	*get_cmd_path(char *cmd, char **envp);
 
 #endif
