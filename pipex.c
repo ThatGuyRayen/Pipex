@@ -37,42 +37,33 @@ char	*ft_getenv(char *name)
 	return (NULL);
 }
 
-
-
 char	*get_cmd_path(char *cmd, char **envp)
 {
-	char	*path;
 	char	*full_cmd;
+	char	*joined;
 	char	**paths;
-	int		i;
+	char	**tmp;
 
+	(void)envp;
 	paths = ft_split(ft_getenv("PATH"), ':');
 	if (!paths)
-	{
-		free(paths);
 		ft_error("Error splitting PATH");
-	}
-	while (*paths)
+	tmp = paths;
+	while (*tmp)
 	{
-		path = *paths;
-		full_cmd = ft_strjoin(path, "/");
-		if (!full_cmd)
-			ft_error("Error joining path");
-		full_cmd = ft_strjoin(full_cmd, cmd);
-		if (!full_cmd)
-			ft_error("Error joining command");
+		joined = ft_strjoin(*tmp, "/");
+		full_cmd = ft_strjoin(joined, cmd);
+		free(joined);
 		if (access(full_cmd, X_OK) == 0)
-		{
-			free_whole(paths);
-			return (full_cmd);
-		}
+			return (free_whole(paths), full_cmd);
 		free(full_cmd);
-		paths++;
+		tmp++;
 	}
 	free_whole(paths);
 	ft_error("Command not found");
-	return (NULL); // This line will never be reached
+	return (NULL);
 }
+
 
 void	process1(int infile, int pipe_write, char *cmd_str, char **envp)
 {
