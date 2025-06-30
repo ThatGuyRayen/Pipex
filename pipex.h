@@ -10,6 +10,7 @@
 # include <unistd.h>
 
 void	ft_error(char *error_msg);
+void	free_whole(char **str);
 char	*ft_getenv(char *name);
 void	process1(int infile, int pipe_write, char *cmd_str, char **envp);
 void	process(int pipe_read, int outfile, char *cmd_str, char **envp);
