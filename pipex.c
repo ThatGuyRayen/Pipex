@@ -108,7 +108,7 @@ void	process2(int pipe_read, int outfile, char *cmd_str, char **envp)
 		cmd_path = get_cmd_path(cmd_args[0], envp);
 		execve(cmd_path, cmd_args, envp);
 		free(cmd_path);
-		free(cmd_args);
+		free_whole(cmd_args);
 		ft_error("Execve failed for cmd2");
 	}
 }
