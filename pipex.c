@@ -122,6 +122,14 @@ void	process2(int pipe_read, int outfile, char *cmd_str, char **envp)
 	}
 }
 
+void	close_stuff(int infile, int outfile, int pipe_read, int pipe_write)
+{
+	close(infile);
+	close(outfile);
+	close(pipe_read);
+	close(pipe_write);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	int	infile;
@@ -154,10 +162,7 @@ int	main(int argc, char **argv, char **envp)
 	process1(infile, pipe_fd[1], argv[2], envp);
 	process2(pipe_fd[0], outfile, argv[3], envp);
 
-	close(infile);
-	close(outfile);
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
+	close_stuff(infile, outfile, pipe_fd[0], pipe_fd[1]);
 
 	wait(NULL); // Wait for child processes to finish
 	wait(NULL);
