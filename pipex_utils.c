@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tpandya <tpandya@student.42berlin.de>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/01 11:50:05 by tpandya           #+#    #+#             */
+/*   Updated: 2025/07/01 11:50:06 by tpandya          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 char	*get_cmd_path(char *cmd, char **envp)
@@ -31,7 +43,7 @@ char	*get_cmd_path(char *cmd, char **envp)
 
 void	run_it(char *argv, char **envp)
 {
-	char **cmd;
+	char	**cmd;
 	int		i;
 	char	*path;
 
@@ -48,8 +60,6 @@ void	run_it(char *argv, char **envp)
 		free(cmd);
 		ft_error("Error while running given Command");
 	}
-	if(execve(path, cmd, envp) == -1)
+	if (execve(path, cmd, envp) == -1)
 		ft_error("Invalid Command or something else with 'cmd' fs");
 }
-
-

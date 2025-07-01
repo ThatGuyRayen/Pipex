@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tpandya <tpandya@student.42berlin.de>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/01 11:49:42 by tpandya           #+#    #+#             */
+/*   Updated: 2025/07/01 11:49:43 by tpandya          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 void	ft_error(char *error_txt)
@@ -37,7 +49,7 @@ int	main(int argc, char **argv, char **envp)
 	int		fd[2];
 	pid_t	pid1;
 
-	if (argc ==5)
+	if (argc == 5)
 	{
 		if (pipe(fd) == -1)
 			ft_error("Invalid Fd");
@@ -48,7 +60,7 @@ int	main(int argc, char **argv, char **envp)
 			process_child(argv, envp, fd);
 		waitpid(pid1, NULL, 0);
 		process_main(argv, envp, fd);
-		}
+	}
 	else
 		ft_error("Terrible argumentssss");
 	return (0);
