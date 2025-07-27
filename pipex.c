@@ -61,6 +61,7 @@ int	main(int argc, char **argv, char **envp)
 		waitpid(pid1, NULL, 0);
 		process_main(argv, envp, fd);
 	}
+	//some errrorrr
 	else
 		ft_error("Terrible argumentssss");
 	return (0);
