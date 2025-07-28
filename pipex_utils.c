@@ -29,7 +29,7 @@ char	*get_cmd_path(char *cmd, char **envp)
 		temp = ft_strjoin(paths[i], "/");
 		path = ft_strjoin(temp, cmd);
 		free(temp);
-		if (access(path, F_OK) == 0)
+		if (access(path, X_OK) == 0)
 			return (path);
 		free(path);
 		i++;
@@ -53,10 +53,7 @@ void	run_it(char *argv, char **envp)
 	if (!path)
 	{
 		while (cmd[i])
-		{
-			free(cmd);
-			i++;
-		}
+			free(cmd[i++]);
 		free(cmd);
 		ft_error("Error while running given Command");
 	}

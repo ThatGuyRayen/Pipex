@@ -25,9 +25,10 @@ void	process_child(char **argv, char **envp, int *fd)
 	infile = open(argv[1], O_RDONLY, 0777);
 	if (infile == -1)
 		ft_error("Can't open Infile");
-	dup2(fd[1], STDOUT_FILENO);
 	dup2(infile, STDIN_FILENO);
+	dup2(fd[1], STDOUT_FILENO);
 	close(fd[0]);
+	close(fd[1]);
 	run_it(argv[2], envp);
 }
 
@@ -35,11 +36,12 @@ void	process_main(char **argv, char **envp, int *fd)
 {
 	int	outfile;
 
-	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (outfile == -1)
 		ft_error("ERROR with Outfile");
 	dup2(fd[0], STDIN_FILENO);
 	dup2(outfile, STDOUT_FILENO);
+	close(fd[0]);
 	close(fd[1]);
 	run_it(argv[3], envp);
 }
