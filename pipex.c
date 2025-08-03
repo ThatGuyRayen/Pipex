@@ -50,6 +50,7 @@ void	process_main(char **argv, char **envp, int *fd)
 int	main(int argc, char **argv, char **envp)
 {
 	int		fd[2];
+	int status;
 	pid_t	pid1;
 
 	if (argc == 5)
@@ -61,11 +62,15 @@ int	main(int argc, char **argv, char **envp)
 			ft_error("Can't Fork");
 		if (pid1 == 0)
 			process_child(argv, envp, fd);
-		close(fd[1]); 
-		waitpid(pid1, NULL, 0);
+
 		process_main(argv, envp, fd);
+		waitpid(pid1, &status, 0);
+		while (wait(NULL) > 0)
+			;
+		close(fd[1]);
 	}
 	else
 		ft_error("Terrible argumentssss");
-	return (0);
+		
+	return (WEXITSTATUS(status));
 }

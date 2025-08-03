@@ -1,5 +1,5 @@
 NAME = pipex
-CC = gcc -g
+CC =  cc 
 SRCS = pipex.c pipex_utils.c
 OBJS = $(SRCS:.c=.o)
 RM = rm -f
