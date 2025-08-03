@@ -12,6 +12,16 @@
 
 #include "pipex.h"
 
+void	free_cmd(char **cmd)
+{
+	int	i;
+
+	i = 0;
+	while (cmd && cmd[i])
+		free(cmd[i++]);
+	free(cmd);
+}
+
 char	*get_cmd_path(char *cmd, char **envp)
 {
 	char	**paths;
@@ -20,9 +30,13 @@ char	*get_cmd_path(char *cmd, char **envp)
 	char	*temp;
 
 	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == 0)
+	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
 		i++;
+	if (!envp[i])
+		return (NULL);
 	paths = ft_split(envp[i] + 5, ':');
+	if (!paths)
+		return (NULL);
 	i = 0;
 	while (paths[i])
 	{
@@ -30,36 +44,38 @@ char	*get_cmd_path(char *cmd, char **envp)
 		path = ft_strjoin(temp, cmd);
 		free(temp);
 		if (access(path, F_OK) == 0)
+		{
+			free_cmd(paths);
 			return (path);
+		}
 		free(path);
 		i++;
 	}
-	i = -1;
-	while (paths[++i])
-		free(paths[i]);
-	free(paths);
-	return (0);
+	free_cmd(paths);
+	return (NULL);
 }
 
 void	run_it(char *argv, char **envp)
 {
 	char	**cmd;
-	int		i;
 	char	*path;
 
-	i = 0;
 	cmd = ft_split(argv, ' ');
+	if (!cmd || !cmd[0])
+	{
+		free_cmd(cmd);
+		ft_error("Error while splitting command");
+	}
 	path = get_cmd_path(cmd[0], envp);
 	if (!path)
 	{
-		while (cmd[i])
-		{
-			free(cmd);
-			i++;
-		}
-		free(cmd);
-		ft_error("Error while running given Command");
+		free_cmd(cmd);
+		ft_error("Error: command not found");
 	}
 	if (execve(path, cmd, envp) == -1)
-		ft_error("Invalid Command or something else with 'cmd' fs");
+	{
+		free(path);
+		free_cmd(cmd);
+		ft_error("Error executing command");
+	}
 }

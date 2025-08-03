@@ -25,9 +25,10 @@ void	process_child(char **argv, char **envp, int *fd)
 	infile = open(argv[1], O_RDONLY, 0777);
 	if (infile == -1)
 		ft_error("Can't open Infile");
-	dup2(fd[1], STDOUT_FILENO);
 	dup2(infile, STDIN_FILENO);
-	close(fd[0]);
+	dup2(fd[1], STDOUT_FILENO);
+	close(fd[0]); 
+	close(infile); 
 	run_it(argv[2], envp);
 }
 
@@ -40,7 +41,9 @@ void	process_main(char **argv, char **envp, int *fd)
 		ft_error("ERROR with Outfile");
 	dup2(fd[0], STDIN_FILENO);
 	dup2(outfile, STDOUT_FILENO);
-	close(fd[1]);
+	close(fd[1]); 
+	close(fd[0]); 
+	close(outfile);
 	run_it(argv[3], envp);
 }
 
@@ -58,6 +61,7 @@ int	main(int argc, char **argv, char **envp)
 			ft_error("Can't Fork");
 		if (pid1 == 0)
 			process_child(argv, envp, fd);
+		close(fd[1]); 
 		waitpid(pid1, NULL, 0);
 		process_main(argv, envp, fd);
 	}
