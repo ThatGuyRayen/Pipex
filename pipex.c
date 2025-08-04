@@ -27,8 +27,8 @@ void	process_child(char **argv, char **envp, int *fd)
 		ft_error("Can't open Infile");
 	dup2(infile, STDIN_FILENO);
 	dup2(fd[1], STDOUT_FILENO);
-	close(fd[0]); 
-	close(infile); 
+	close(fd[0]);
+	close(infile);
 	run_it(argv[2], envp);
 }
 
@@ -41,8 +41,8 @@ void	process_main(char **argv, char **envp, int *fd)
 		ft_error("ERROR with Outfile");
 	dup2(fd[0], STDIN_FILENO);
 	dup2(outfile, STDOUT_FILENO);
-	close(fd[1]); 
-	close(fd[0]); 
+	close(fd[1]);
+	close(fd[0]);
 	close(outfile);
 	run_it(argv[3], envp);
 }
@@ -50,7 +50,7 @@ void	process_main(char **argv, char **envp, int *fd)
 int	main(int argc, char **argv, char **envp)
 {
 	int		fd[2];
-	int status;
+	int		status;
 	pid_t	pid1;
 
 	if (argc == 5)
@@ -62,7 +62,6 @@ int	main(int argc, char **argv, char **envp)
 			ft_error("Can't Fork");
 		if (pid1 == 0)
 			process_child(argv, envp, fd);
-
 		process_main(argv, envp, fd);
 		waitpid(pid1, &status, 0);
 		while (wait(NULL) > 0)
@@ -71,6 +70,5 @@ int	main(int argc, char **argv, char **envp)
 	}
 	else
 		ft_error("Terrible argumentssss");
-		
 	return (WEXITSTATUS(status));
 }

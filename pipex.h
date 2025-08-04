@@ -25,6 +25,7 @@ void	ft_error(char *error_msg);
 void	process_main(char **argv, char **envp, int *fd);
 void	process_child(char **argv, char **envp, int *fd);
 void	free_cmd(char **cmd);
+char	*join_path(char *dir, char *cmd);
 char	*get_cmd_path(char *cmd, char **evnp);
 void	run_it(char *argv, char **envp);
 

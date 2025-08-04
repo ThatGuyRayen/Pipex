@@ -22,12 +22,24 @@ void	free_cmd(char **cmd)
 	free(cmd);
 }
 
+char	*join_path(char *dir, char *cmd)
+{
+	char	*temp;
+	char	*path;
+
+	temp = ft_strjoin(dir, "/");
+	if (!temp)
+		return (NULL);
+	path = ft_strjoin(temp, cmd);
+	free(temp);
+	return (path);
+}
+
 char	*get_cmd_path(char *cmd, char **envp)
 {
 	char	**paths;
 	char	*path;
 	int		i;
-	char	*temp;
 
 	i = 0;
 	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
@@ -37,22 +49,15 @@ char	*get_cmd_path(char *cmd, char **envp)
 	paths = ft_split(envp[i] + 5, ':');
 	if (!paths)
 		return (NULL);
-	i = 0;
-	while (paths[i])
+	i = -1;
+	while (paths[++i])
 	{
-		temp = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(temp, cmd);
-		free(temp);
-		if (access(path, F_OK) == 0)
-		{
-			free_cmd(paths);
-			return (path);
-		}
+		path = join_path(paths[i], cmd);
+		if (path && access(path, F_OK) == 0)
+			return (free_cmd(paths), path);
 		free(path);
-		i++;
 	}
-	free_cmd(paths);
-	return (NULL);
+	return (free_cmd(paths), NULL);
 }
 
 void	run_it(char *argv, char **envp)
